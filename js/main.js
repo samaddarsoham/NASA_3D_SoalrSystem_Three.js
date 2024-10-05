@@ -1,28 +1,25 @@
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0";
 import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
 
-let scene, camera, renderer, controls, skybox;
-let planet_sun, planet_mercury, planet_venus, planet_earth, planet_mars, planet_jupiter, planet_saturn, planet_uranus, planet_neptune;
+let scene, camera, renderer, controls, sunLight;
+let planets = {};
+let orbitsVisible = true;
+let studioLightingEnabled = false;
+let currentPlanet = null;
 
-let mercury_orbit_radius = 50;
-let venus_orbit_radius = 60;
-let earth_orbit_radius = 70;
-let mars_orbit_radius = 80;
-let jupiter_orbit_radius = 100;
-let saturn_orbit_radius = 120;
-let uranus_orbit_radius = 140;
-let neptune_orbit_radius = 160;
+// Revolution speeds (base speeds in radians per second)
+const revolutionSpeeds = {
+  mercury: 0.01,
+  venus: 0.008,
+  earth: 0.006,
+  mars: 0.004,
+  jupiter: 0.003,
+  saturn: 0.002,
+  uranus: 0.0015,
+  neptune: 0.001
+};
 
-let mercury_revolution_speed = 2;
-let venus_revolution_speed = 1.5;
-let earth_revolution_speed = 1;
-let mars_revolution_speed = 0.8;
-let jupiter_revolution_speed = 0.7;
-let saturn_revolution_speed = 0.6;
-let uranus_revolution_speed = 0.5;
-let neptune_revolution_speed = 0.4;
-
-// Revolving speed multiplier (adjusted by user control)
+// Speed multiplier
 let revolutionSpeedMultiplier = 1;
 
 function createMaterialArray() {
@@ -37,7 +34,7 @@ function createMaterialArray() {
 function setSkyBox() {
   const materialArray = createMaterialArray();
   let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
-  skybox = new THREE.Mesh(skyboxGeo, materialArray);
+  const skybox = new THREE.Mesh(skyboxGeo, materialArray);
   scene.add(skybox);
 }
 
@@ -48,14 +45,13 @@ function loadPlanetTexture(texture, radius, widthSegments, heightSegments, meshT
   const material = meshType === 'standard' ? new THREE.MeshStandardMaterial({ map: planetTexture }) : new THREE.MeshBasicMaterial({ map: planetTexture });
 
   const planet = new THREE.Mesh(geometry, material);
-
+  planets[texture.split('/').pop().split('_')[0]] = planet; // Store planet in planets object
   return planet;
 }
 
 function createRing(innerRadius, color) {
   let outerRadius = innerRadius - 0.1;
-  let thetaSegments = 100;
-  const geometry = new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments);
+  const geometry = new THREE.RingGeometry(innerRadius, outerRadius, 100);
   const material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
@@ -66,102 +62,116 @@ function createRing(innerRadius, color) {
 function init() {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, 0.1, 1000);
-
+  
   setSkyBox();
 
   // Load planets
-  planet_earth = loadPlanetTexture("../img/earth_hd.jpg", 4, 100, 100, 'standard');
-  planet_sun = loadPlanetTexture("../img/sun_hd.jpg", 20, 100, 100, 'basic');
-  planet_mercury = loadPlanetTexture("../img/mercury_hd.jpg", 2, 100, 100, 'standard');
-  planet_venus = loadPlanetTexture("../img/venus_hd.jpg", 3, 100, 100, 'standard');
-  planet_mars = loadPlanetTexture("../img/mars_hd.jpg", 3.5, 100, 100, 'standard');
-  planet_jupiter = loadPlanetTexture("../img/jupiter_hd.jpg", 10, 100, 100, 'standard');
-  planet_saturn = loadPlanetTexture("../img/saturn_hd.jpg", 8, 100, 100, 'standard');
-  planet_uranus = loadPlanetTexture("../img/uranus_hd.jpg", 6, 100, 100, 'standard');
-  planet_neptune = loadPlanetTexture("../img/neptune_hd.jpg", 5, 100, 100, 'standard');
-
-  // Add planets to the scene
-  scene.add(planet_earth);
-  scene.add(planet_sun);
-  scene.add(planet_mercury);
-  scene.add(planet_venus);
-  scene.add(planet_mars);
-  scene.add(planet_jupiter);
-  scene.add(planet_saturn);
-  scene.add(planet_uranus);
-  scene.add(planet_neptune);
-
-  const sunLight = new THREE.PointLight(0xffffff, 1, 0);
-  sunLight.position.copy(planet_sun.position);
-  scene.add(sunLight);
-
-  // Define colors for the planets
-  const planetColors = {
-    mercury: 0xaaaaaa,  // Grey
-    venus: 0xffcc00,    // Yellow
-    earth: 0x0033cc,    // Blue
-    mars: 0xff4500,     // Red
-    jupiter: 0xd7a86d,  // Brown
-    saturn: 0xe8c69b,   // Light Brown
-    uranus: 0x66b2e8,   // Light Blue
-    neptune: 0x0000ff    // Dark Blue
+  const planetTextures = {
+    sun: "../img/sun_hd.jpg",
+    mercury: "../img/mercury_hd.jpg",
+    venus: "../img/venus_hd.jpg",
+    earth: "../img/earth_hd.jpg",
+    mars: "../img/mars_hd.jpg",
+    jupiter: "../img/jupiter_hd.jpg",
+    saturn: "../img/saturn_hd.jpg",
+    uranus: "../img/uranus_hd.jpg",
+    neptune: "../img/neptune_hd.jpg"
   };
 
-  // Create orbits with corresponding colors
-  createRing(mercury_orbit_radius, planetColors.mercury);
-  createRing(venus_orbit_radius, planetColors.venus);
-  createRing(earth_orbit_radius, planetColors.earth);
-  createRing(mars_orbit_radius, planetColors.mars);
-  createRing(jupiter_orbit_radius, planetColors.jupiter);
-  createRing(saturn_orbit_radius, planetColors.saturn);
-  createRing(uranus_orbit_radius, planetColors.uranus);
-  createRing(neptune_orbit_radius, planetColors.neptune);
+  for (const [name, texture] of Object.entries(planetTextures)) {
+    const radius = name === 'sun' ? 20 : 4; // Adjust radius for the sun
+    const meshType = name === 'sun' ? 'basic' : 'standard';
+    const planet = loadPlanetTexture(texture, radius, 100, 100, meshType);
+    scene.add(planet);
+  }
+
+  sunLight = new THREE.PointLight(0xffffff, 1, 0);
+  sunLight.position.set(0, 0, 0);
+  scene.add(sunLight);
+
+  // Create orbits
+  createRing(50, 0xaaaaaa); // Mercury
+  createRing(60, 0xffcc00); // Venus
+  createRing(70, 0x0033cc); // Earth
+  createRing(80, 0xff4500); // Mars
+  createRing(100, 0xd7a86d); // Jupiter
+  createRing(120, 0xe8c69b); // Saturn
+  createRing(140, 0x66b2e8); // Uranus
+  createRing(160, 0x0000ff); // Neptune
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  renderer.domElement.id = "c";
   controls = new OrbitControls(camera, renderer.domElement);
   controls.minDistance = 12;
   controls.maxDistance = 1000;
-
   camera.position.z = 100;
+
+  // Add event listener for object selection
+  document.getElementById('objectFilter').addEventListener('change', (event) => {
+    if (event.target.selectedOptions.length > 0) {
+      const selectedPlanet = event.target.selectedOptions[0].value;
+      zoomToPlanet(selectedPlanet);
+    }
+  });
+
+  // Add view mode change listener
+  document.getElementById('viewMode').addEventListener('change', (event) => {
+    if (event.target.value === 'first-person') {
+      controls.enabled = false; // Disable orbit controls
+      camera.position.set(0, 10, 10); // Position the camera for first-person view
+      camera.lookAt(0, 0, 0); // Look at the center (the sun)
+    } else {
+      controls.enabled = true; // Enable orbit controls
+    }
+  });
 }
 
 function planetRevolver(time, speed, planet, orbitRadius) {
-  let orbitSpeedMultiplier = revolutionSpeedMultiplier * 0.001;  // Adjust based on user input
-  const planetAngle = time * orbitSpeedMultiplier * speed;
-  planet.position.x = planet_sun.position.x + orbitRadius * Math.cos(planetAngle);
-  planet.position.z = planet_sun.position.z + orbitRadius * Math.sin(planetAngle);
+  const planetAngle = time * revolutionSpeedMultiplier * speed; // Use a slower base speed
+  planet.position.x = 0 + orbitRadius * Math.cos(planetAngle);
+  planet.position.z = 0 + orbitRadius * Math.sin(planetAngle);
 }
 
 function animate(time) {
   requestAnimationFrame(animate);
-
-  // Rotate the planets
+  
   const rotationSpeed = 0.005;
-  planet_earth.rotation.y += rotationSpeed;
-  planet_sun.rotation.y += rotationSpeed;
-  planet_mercury.rotation.y += rotationSpeed;
-  planet_venus.rotation.y += rotationSpeed;
-  planet_mars.rotation.y += rotationSpeed;
-  planet_jupiter.rotation.y += rotationSpeed;
-  planet_saturn.rotation.y += rotationSpeed;
-  planet_uranus.rotation.y += rotationSpeed;
-  planet_neptune.rotation.y += rotationSpeed;
+  for (const planet of Object.values(planets)) {
+    planet.rotation.y += rotationSpeed;
+  }
 
-  // Revolve planets around the sun
-  planetRevolver(time, mercury_revolution_speed, planet_mercury, mercury_orbit_radius);
-  planetRevolver(time, venus_revolution_speed, planet_venus, venus_orbit_radius);
-  planetRevolver(time, earth_revolution_speed, planet_earth, earth_orbit_radius);
-  planetRevolver(time, mars_revolution_speed, planet_mars, mars_orbit_radius);
-  planetRevolver(time, jupiter_revolution_speed, planet_jupiter, jupiter_orbit_radius);
-  planetRevolver(time, saturn_revolution_speed, planet_saturn, saturn_orbit_radius);
-  planetRevolver(time, uranus_revolution_speed, planet_uranus, uranus_orbit_radius);
-  planetRevolver(time, neptune_revolution_speed, planet_neptune, neptune_orbit_radius);
+  // Revolve planets
+  planetRevolver(time, revolutionSpeeds.mercury, planets.mercury, 50);
+  planetRevolver(time, revolutionSpeeds.venus, planets.venus, 60);
+  planetRevolver(time, revolutionSpeeds.earth, planets.earth, 70);
+  planetRevolver(time, revolutionSpeeds.mars, planets.mars, 80);
+  planetRevolver(time, revolutionSpeeds.jupiter, planets.jupiter, 100);
+  planetRevolver(time, revolutionSpeeds.saturn, planets.saturn, 120);
+  planetRevolver(time, revolutionSpeeds.uranus, planets.uranus, 140);
+  planetRevolver(time, revolutionSpeeds.neptune, planets.neptune, 160);
+
+  // Follow the current planet if one is selected
+  if (currentPlanet) {
+    const planet = planets[currentPlanet];
+    camera.position.set(planet.position.x, planet.position.y + 10, planet.position.z + 20);
+    camera.lookAt(planet.position);
+  }
 
   controls.update();
   renderer.render(scene, camera);
+}
+
+function zoomToPlanet(planetName) {
+  currentPlanet = planetName; // Set current planet for following
+  const planet = planets[planetName];
+  if (planet) {
+    camera.position.set(planet.position.x, planet.position.y + 10, planet.position.z + 20);
+    camera.lookAt(planet.position);
+
+    // Update the info panel
+    document.getElementById('objectInfo').innerText = `You are now viewing ${planetName.charAt(0).toUpperCase() + planetName.slice(1)}`;
+  }
 }
 
 function onWindowResize() {
@@ -171,14 +181,46 @@ function onWindowResize() {
 }
 
 // Speed control handler
-function updateRevolutionSpeed(event) {
+document.getElementById('speedControl').addEventListener('input', (event) => {
   revolutionSpeedMultiplier = event.target.value;
+  document.getElementById('speedValue').innerText = event.target.value;
+});
+
+// Toggle orbits
+function toggleOrbits() {
+  orbitsVisible = !orbitsVisible;
+  scene.children.forEach(child => {
+    if (child instanceof THREE.Mesh && child.geometry instanceof THREE.RingGeometry) {
+      child.visible = orbitsVisible;
+    }
+  });
+  document.getElementById('toggleOrbits').innerText = orbitsVisible ? "Hide Orbits" : "Show Orbits";
 }
 
+// Toggle studio lighting
+function toggleLighting() {
+  studioLightingEnabled = !studioLightingEnabled;
+  const lights = scene.children.filter(child => child instanceof THREE.Light);
+  lights.forEach(light => scene.remove(light));
+  
+  if (studioLightingEnabled) {
+    const ambientLight = new THREE.AmbientLight(0x404040, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(10, 10, 10).normalize();
+
+    scene.add(ambientLight);
+    scene.add(directionalLight);
+  } else {
+    scene.add(sunLight);
+  }
+  
+  document.getElementById('toggleLighting').innerText = studioLightingEnabled ? "Disable Studio Lighting" : "Enable Studio Lighting";
+}
+
+// Event listeners
+document.getElementById('toggleOrbits').addEventListener('click', toggleOrbits);
+document.getElementById('toggleLighting').addEventListener('click', toggleLighting);
 window.addEventListener("resize", onWindowResize, false);
 
-// Event listener for revolution speed input
-document.getElementById('speedControl').addEventListener('input', updateRevolutionSpeed);
-
 init();
-animate(0); // Initialize with time 0
+animate(0);

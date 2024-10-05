@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,15 +7,55 @@
   <link rel="stylesheet" href="style.css" />
   <title>3D Solar System</title>
 </head>
-
 <body>
-  <!-- Speed control slider -->
-  <div class="control-panel">
+  <div class="control-panel" id="control-panel">
     <label for="speedControl">Revolution Speed:</label>
     <input type="range" id="speedControl" min="0.1" max="10" step="0.1" value="1" />
+    <span id="speedValue">1</span>
+
+    <div>
+      <label for="dateInput">Select Date:</label>
+      <input type="date" id="dateInput" />
+    </div>
+
+    <div>
+      <label>Toggle Orbits:</label>
+      <button id="toggleOrbits">Hide Orbits</button>
+    </div>
+
+    <div>
+      <label>Toggle Studio Lighting:</label>
+      <button id="toggleLighting">Enable Studio Lighting</button>
+    </div>
+
+    <div>
+      <label for="objectFilter">Filter Objects:</label>
+      <select id="objectFilter" multiple>
+        <option value="mercury">Mercury</option>
+        <option value="venus">Venus</option>
+        <option value="earth">Earth</option>
+        <option value="mars">Mars</option>
+        <option value="jupiter">Jupiter</option>
+        <option value="saturn">Saturn</option>
+        <option value="uranus">Uranus</option>
+        <option value="neptune">Neptune</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="viewMode">View Mode:</label>
+      <select id="viewMode">
+        <option value="normal">Normal</option>
+        <option value="first-person">First Person</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="info-panel" id="info-panel">
+    <h2>Object Information</h2>
+    <p id="objectInfo">Select a celestial object to see its information.</p>
   </div>
 
   <script type="module" src="./js/main.js"></script>
 </body>
-
 </html>
