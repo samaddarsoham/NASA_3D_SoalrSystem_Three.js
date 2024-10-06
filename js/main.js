@@ -20,7 +20,7 @@ const revolutionSpeeds = {
 };
 
 // Speed multiplier
-let revolutionSpeedMultiplier = 1;
+let revolutionSpeedMultiplier = 0.1;
 
 function createMaterialArray() {
   const skyboxImagepaths = ['../img/skybox/space_ft.png', '../img/skybox/space_bk.png', '../img/skybox/space_up.png', '../img/skybox/space_dn.png', '../img/skybox/space_rt.png', '../img/skybox/space_lf.png'];
