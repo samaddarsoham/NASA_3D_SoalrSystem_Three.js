@@ -71,7 +71,7 @@ body {
   width: 500px;
   margin-left: 250px;
   /* background-color: #fe53bb; */
-  justify-content: space-between;
+  justify-content: space-around;
 }
 .head{
   color: #ffdb3b;
