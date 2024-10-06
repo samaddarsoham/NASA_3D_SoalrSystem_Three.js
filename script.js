@@ -33,7 +33,6 @@ async function fetchPlanetData() {
     document.querySelector('.Long').textContent =  data.data[0].Longitude;
     document.querySelector('.Mean').textContent =  data.data[0].MeanAnomaly; 
     document.querySelector('.True').textContent = data.data[0].TrueAnomaly; 
-    document.querySelector('.Argue').textContent =  data.data[0].ArgumentOfPeriapsis; 
 
   } catch (error) {
     console.error('There has been a problem with your fetch operation:', error);
