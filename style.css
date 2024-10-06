@@ -35,3 +35,122 @@ input[type="range"] {
   padding: 10px;
   border-radius: 8px;
 }
+
+/* General Panel Styling - Increased size */
+.control-panel,
+.info-panel {
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+  border-radius: 12px;
+  padding: 16px; /* Increased padding */
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  max-width: 200px; /* Increased width */
+  font-size: 14px; /* Increased font size */
+}
+
+/* Control Panel Styling */
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Increased gap between controls */
+  position: absolute;
+  bottom: 20px; /* Positioned near the bottom */
+  left: 20px; /* Positioned a little further from the left corner */
+}
+
+/* Info Panel Styling */
+.info-panel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid white;
+  padding: 12px; /* Increased padding */
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  margin-top: 12px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.info-panel h2 {
+  margin-bottom: 10px;
+  font-size: 16px; /* Bigger heading */
+  color: #00f3ff;
+}
+
+.info-panel p {
+  font-size: 14px; /* Bigger paragraph text */
+  margin-top: 10px;
+}
+
+/* Form Elements Styling */
+label {
+  font-weight: bold;
+  font-size: 12px; /* Slightly bigger label text */
+  color: #00f3ff;
+}
+
+input[type="range"] {
+  width: 100%; /* Increased range input width */
+}
+
+input[type="date"],
+select,
+button {
+  width: 100%; /* Wider input fields */
+  padding: 8px; /* Increased padding */
+  border-radius: 6px;
+  border: none;
+  background-color: #333;
+  color: white;
+  margin-top: 8px;
+  margin-left: 5px
+  ;
+  cursor: pointer;
+  font-size: 15px; /* Bigger font size */
+}
+
+button:hover {
+  background-color: #00f3ff;
+  color: #0afbff;
+}
+
+select {
+  background-color: #222;
+}
+
+#objectFilter {
+  height: 60px; /* Slightly increased height */
+  font-size: 12px; /* Bigger text */
+}
+
+#viewMode {
+  background-color: #222;
+  padding: 8px; /* Increased padding */
+  font-size: 12px; /* Bigger font size */
+}
+
+/* Align everything in the corner */
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  color: rgb(117, 7, 7);
+}
+
+/* A nice shadow for 3D effect */
+.control-panel,
+.info-panel {
+  box-shadow: 0 3px 15px rgba(114, 141, 222, 0.263);
+}
+
+/* Button Styling */
+.btn {
+  background: transparent; /* Remove blue background */
+  border: none; /* Remove border */
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+/* Optional: Add hover effects for better user experience */
+.btn:hover {
+  background-color: rgba(0, 0, 0, 0.5); /* Change background on hover if desired */
+}
