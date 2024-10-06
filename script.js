@@ -1,3 +1,4 @@
+
 import * as THREE from "https://cdn.skypack.dev/three@0.129.0";
 import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
@@ -12,6 +13,36 @@ let moonAngle = 0; // Angle for Moon's revolution
 const raycaster = new THREE.Raycaster(); // Raycaster for click detection
 const mouse = new THREE.Vector2(); // Mouse coordinates
 let focusedObject = null; // Currently focused object
+
+// Function to fetch planet data
+async function fetchPlanetData() {
+  try{
+  const response = await fetch("https://nasabackendofficial.onrender.com/api/v1/planets/each/Earth"); // Adjust the endpoint as necessary
+    
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+    const data = await response.json();
+    // Assuming the response contains a 'name' property
+    const planetName = data.data[0].PlanetName|| "Unknown Planet";
+
+    document.querySelector('.planet').textContent =planetName;
+    document.querySelector('.Ecc').textContent = data.data[0].Eccentricity;
+    document.querySelector('.Semi').textContent =  data.data[0].SemiMajorAxis; 
+    document.querySelector('.Incli').textContent =  data.data[0].Inclination; 
+    document.querySelector('.Long').textContent =  data.data[0].Longitude;
+    document.querySelector('.Mean').textContent =  data.data[0].MeanAnomaly; 
+    document.querySelector('.True').textContent = data.data[0].TrueAnomaly; 
+    document.querySelector('.Argue').textContent =  data.data[0].ArgumentOfPeriapsis; 
+
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:', error);
+    document.querySelector('.planet').textContent = "Error fetching planet data"; // Handle errors gracefully
+  }
+}
+
+// Call the function to fetch planet data
+fetchPlanetData();
 
 function createMaterialArray() {
   const skyboxImagepaths = [
@@ -106,9 +137,9 @@ function init() {
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableZoom = true; // Enable zooming
   controls.enablePan = true; // Enable panning
-  controls.target.set(0, 0, 0); // Set target to the Earth
+  controls.target.set(5, 5, 5); // Set target to the Earth
   controls.update(); // Update controls
-  camera.position.set(-40, 0, 120); // Set camera position
+  camera.position.set(-20, 100, 90); // Set camera position
   
   // Add click event listener
   window.addEventListener('click', onMouseClick, true);
@@ -165,19 +196,18 @@ function animate() {
     const distance = size * 0.4; // Adjust distance to fit the object
 
     camera.position.lerp(new THREE.Vector3(center.x, center.y, center.z + distance * 1.5), 0.1); // Smoothly interpolate camera position
-    controls.target.copy(center); // Update controls target
-    controls.update(); // Update controls
+    camera.lookAt(center); // Look at the focused object
   }
 
-  renderer.render(scene, camera);
+  controls.update(); // Update the controls
+  renderer.render(scene, camera); // Render the scene
 }
 
-function onWindowResize() {
+// Handle window resizing
+window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-}
+});
 
-// Event listeners for resizing
-window.addEventListener("resize", onWindowResize, false);
-init();
+init(); // Initialize the scene and start rendering

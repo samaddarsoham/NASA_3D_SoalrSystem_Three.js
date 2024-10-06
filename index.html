@@ -1,74 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <title>3D Solar System</title>
-</head>
-<body>
-  <div class="control-panel" id="control-panel">
-    <label for="speedControl">Revolution Speed:</label>
-    <input type="range" id="speedControl" min="0.1" max="10" step="0.1" value="1" />
-    <span id="speedValue">1</span>
+  <head>
+    <!-- Character encoding for the document -->
+    <meta charset="UTF-8" />
 
-    <div>
-      <label for="dateInput">Select Date:</label>
-      <input type="date" id="dateInput" />
-    </div>
+    <!-- Ensures proper scaling on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <div>
-      <label>Toggle Orbits:</label>
-      <button id="toggleOrbits">Hide Orbits</button>
-    </div>
+    <!-- Title of the document shown in the browser tab -->
+    <title>Document</title>
 
-    <div>
-      <label>Toggle Studio Lighting:</label>
-      <button id="toggleLighting">Enable Studio Lighting</button>
-    </div>
+    <!-- Linking the external CSS stylesheet -->
+    <link rel="stylesheet" href="style0.css" />
+  </head>
+  <body>
+    <!-- Main section for the landing page background and content -->
+    <section>
+      <!-- Container for the heading and button -->
+      <div class="content">
+        <!-- Heading text for the web app -->
+        <h2>Your Interactive Journey Through the Solar System</h2>
+      <a href="index0.html" class="button1" style="--clr: #7808d0">
+        <!-- Button container -->
+        <div class="button">
+          <!-- Link styled as a button with CSS class "button1" -->
+            <!-- Wrapper for button icon, containing two SVGs for the button animation -->
+            <span class="button1__icon-wrapper">
+              <!-- First SVG icon displayed on the button -->
+              <svg
+                viewBox="0 0 14 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="button1__icon-svg"
+                width="10"
+              >
+                <!-- Path for the first SVG icon -->
+                <path
+                  d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z"
+                  fill="currentColor"
+                ></path>
+              </svg>
 
-    <div>
-      <label for="objectFilter">Filter Objects:</label>
-      <select id="objectFilter" multiple>
-        <option value="mercury">Mercury</option>
-        <option value="venus">Venus</option>
-        <option value="earth">Earth</option>
-        <option value="mars">Mars</option>
-        <option value="jupiter">Jupiter</option>
-        <option value="saturn">Saturn</option>
-        <option value="uranus">Uranus</option>
-        <option value="neptune">Neptune</option>
-      </select>
-    </div>
+              <!-- Second SVG icon (hidden initially, shown during button animation) -->
+              <svg
+                viewBox="0 0 14 15"
+                fill="none"
+                width="10"
+                xmlns="http://www.w3.org/2000/svg"
+                class="button1__icon-svg button1__icon-svg--copy"
+              >
+                <!-- Path for the second SVG icon -->
+                <path
+                  d="M13.376 11.552l-.264-10.44-10.44-.24.024 2.28 6.96-.048L.2 12.56l1.488 1.488 9.432-9.432-.048 6.912 2.304.024z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </span>
+            <!-- Button text -->
+            Explore the Orrery
+          
+        </div>
+      </a>
 
-    <div>
-      <label for="viewMode">View Mode:</label>
-      <select id="viewMode">
-        <option value="normal">Normal</option>
-        <option value="first-person">First Person</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="info-panel" id="info-panel">
-    <h2>Object Information</h2>
-    <p id="objectInfo">Select a celestial object to see its information.</p>
-  </div>
-
-  <a href="index1.html" target="_blank">
-    <button type="button" class="btn">
-      <strong>CLICK HERE TO EXPLORE EARTH</strong>
-      <div id="container-stars">
-        <div id="stars"></div>
+        <!-- Falling stars animation elements -->
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
+        <span class="fall"></span>
       </div>
-      <div id="glow">
-        <div class="circle"></div>
-        <div class="circle"></div>
-      </div>
-    </button>
-  </a>
+    </section>
 
-  <script type="module" src="./js/main.js"></script>
-</body>
+    <!-- JavaScript code for button click animation -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Select the button element
+        const button = document.querySelector(".button");
+
+        // Add an event listener to the button
+        button.addEventListener("click", (e) => {
+          e.preventDefault(); // Prevent the default link behavior
+
+          // Add the 'clicked' class to trigger the button animation
+          button.classList.add("clicked");
+
+          // Remove the 'clicked' class after the animation ends (600ms)
+          setTimeout(() => button.classList.remove("clicked"), 600);
+        });
+      });
+    </script>
+  </body>
 </html>

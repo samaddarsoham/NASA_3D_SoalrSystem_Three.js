@@ -17,7 +17,7 @@ body {
     top: 0;
     left: 0;
     width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
+    height: 0vh; /* Full viewport height */
     z-index: 1;
     pointer-events: none; /* Allow interactions to pass through */
     display: flex;
@@ -25,9 +25,23 @@ body {
     align-items: flex-start; /* Align items to the top */
     padding: 20px; /* Add padding to position the dashboard away from the edges */
 }
-
+ .Description{
+  width: 400px;
+  margin-left: 220px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* background-color: #fe53bb; */
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  /* margin-bottom: 2px; */
+  color: white;
+  /* text-align: left; */
+ }
 .dashboard {
-    background: rgba(0, 0, 0, 0.5); /* Add some transparency */
+  /* background-color: aqua; */
+  max-width: 30vw;
+    /* background: rgba(0, 0, 0, 0.5);  */
     border: 2px solid white;
     padding: 20px;
     padding-bottom: 40%;
@@ -38,10 +52,11 @@ body {
     font-family: Calibri, sans-serif;
     text-align: center;
     font-size: 28px;
+    /* overflow-y: scroll; */
 
     display: flex;
     flex-direction: column; /* Arrange content in a vertical layout */
-    justify-content: flex-start; /* Align content to the top */
+    justify-content: center; /* Align content to the top */
     align-items: center; /* Align content in the center horizontally */
 }
 
@@ -51,7 +66,16 @@ body {
     font-size: 36px; /* Adjust font size if necessary */
 }
 
-
+.done{
+  display: flex;
+  width: 500px;
+  margin-left: 250px;
+  /* background-color: #fe53bb; */
+  justify-content: space-between;
+}
+.head{
+  color: #ffdb3b;
+}
 
 canvas {
     display: block; /* Ensures the Three.js canvas takes full width/height */
@@ -239,4 +263,37 @@ canvas {
       box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
     }
   }
+  .navigate-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    
+    text-decoration: none; /* Remove underline from the link */
+    display: inline-block; /* So that anchor behaves like a button */
+    z-index: 9999;
+  }
+  
+  .navigate-button:hover {
+    background: linear-gradient(135deg, #23a6d5, #23d5ab);
+    transform: scale(1.1);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .navigate-button:active {
+    transform: scale(1.05);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  }
+  
   
