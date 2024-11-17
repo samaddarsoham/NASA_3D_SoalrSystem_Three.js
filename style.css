@@ -154,3 +154,31 @@ body {
 .btn:hover {
   background-color: rgba(0, 0, 0, 0.5); /* Change background on hover if desired */
 }
+.button1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 10px 20px; /* Add padding to keep content within bounds */
+  background-color: var(--clr, #7808d0); /* Button background color */
+  border-radius: 8px; /* Rounded corners */
+  width: fit-content; /* Adjust width based on content */
+  color: white; /* Text color */
+  font-family: Arial, sans-serif;
+  font-size: 16px; /* Adjust font size */
+  overflow: hidden;
+  position: relative;
+}
+
+.button1__icon-wrapper {
+  display: flex;
+  align-items: center;/* Space between icon and text */
+}
+
+.button-text {
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.button1:hover {
+  background-color: #00f3ff; /* Change color on hover */
+}
